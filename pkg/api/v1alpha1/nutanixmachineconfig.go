@@ -13,6 +13,9 @@ type NutanixIdentifierType string
 // NutanixGPUIdentifierType is an enumeration of different GPU identifier types.
 type NutanixGPUIdentifierType string
 
+// NutanixTrustBundleKind is an enumeration of different trust bundle kinds.
+type NutanixTrustBundleKind string
+
 // NutanixBootType is an enumeration of different boot types.
 type NutanixBootType string
 
@@ -47,6 +50,12 @@ const (
 
 	// NutanixBootTypeUEFI is a resource identifier identifying the UEFI boot type for virtual machines.
 	NutanixBootTypeUEFI NutanixBootType = "uefi"
+
+	// NutanixTrustBundleKindString is a trust bundle kind identifying the object by String.
+	NutanixTrustBundleKindString = NutanixTrustBundleKind("String")
+
+	// NutanixTrustBundleKindConfigMap is a trust bundle kind identifying the object by ConfigMap.
+	NutanixTrustBundleKindConfigMap = NutanixTrustBundleKind("ConfigMap")
 
 	defaultNutanixOSFamily         = Ubuntu
 	defaultNutanixSystemDiskSizeGi = "40Gi"

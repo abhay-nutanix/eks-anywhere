@@ -77,11 +77,22 @@ func WithNutanixPort(value int) NutanixFiller {
 // WithNutanixAdditionalTrustBundle returns a NutanixFiller that sets the additional trust bundle for the Nutanix provider.
 func WithNutanixAdditionalTrustBundle(value string) NutanixFiller {
 	return func(config *NutanixConfig) {
+		if config == nil || config.datacenterConfig == nil {
+			logger.Info("Warning: NutanixConfig or datacenterConfig is nil. Skipping trust bundle configuration.")
+			return
+		}
+
 		certificate, err := base64.StdEncoding.DecodeString(value)
 		if err != nil {
 			logger.Info("Warning: Failed to decode AdditionalTrustBundle. AdditionalTrustBundle won't be added")
-		} else {
-			config.datacenterConfig.Spec.AdditionalTrustBundle = string(certificate)
+			return
+		}
+
+		config.datacenterConfig.Spec.AdditionalTrustBundle = anywherev1.NutanixTrustBundleWrapper{
+			Value: &anywherev1.NutanixAdditionalTrustBundle{
+				Kind: anywherev1.NutanixTrustBundleKindString,
+				Data: string(certificate),
+			},
 		}
 	}
 }

@@ -5,6 +5,7 @@ package v1alpha1
 
 import (
 	"crypto/x509"
+	"encoding/json"
 	"encoding/pem"
 	"errors"
 	"fmt"
@@ -28,7 +29,7 @@ type NutanixDatacenterConfigSpec struct {
 	// AdditionalTrustBundle is the optional PEM-encoded certificate bundle for
 	// users that configured their Prism Central with certificates from non-publicly
 	// trusted CAs
-	AdditionalTrustBundle string `json:"additionalTrustBundle,omitempty"`
+	AdditionalTrustBundle NutanixTrustBundleWrapper `json:"additionalTrustBundle,omitempty"`
 
 	// Insecure is the optional flag to skip TLS verification. Nutanix Prism
 	// Central installation by default ships with a self-signed certificate
@@ -52,6 +53,54 @@ type NutanixDatacenterConfigSpec struct {
 	// List should be valid IP addresses and IP address ranges.
 	// +optional
 	CcmExcludeNodeIPs []string `json:"ccmExcludeNodeIPs,omitempty"`
+}
+
+// NutanixTrustBundleReference is a reference to a Nutanix trust bundle.
+// +kubebuilder:object:generate=true
+type NutanixAdditionalTrustBundle struct {
+	// Kind of the Nutanix trust bundle
+	// +kubebuilder:validation:Enum=String;ConfigMap
+	Kind NutanixTrustBundleKind `json:"kind"`
+	// Data of the trust bundle if Kind is String.
+	// +optional
+	Data string `json:"data"`
+	// Name of the credential.
+	// +optional
+	Name string `json:"name"`
+	// namespace of the credential.
+	// +optional
+	Namespace string `json:"namespace"`
+}
+
+// NutanixTrustBundleWraper is a wrapper for the Nutanix trust bundle.
+// It can be either a string or a full struct.
+// +kubebuilder:object:generate=true
+type NutanixTrustBundleWrapper struct {
+	Value *NutanixAdditionalTrustBundle
+	Raw   string
+}
+
+// NutanixTrust
+func (n *NutanixTrustBundleWrapper) UnmarshalJSON(data []byte) error {
+	// Try to unmarshal as string
+	var rawStr string
+	if err := json.Unmarshal(data, &rawStr); err == nil {
+		n.Raw = rawStr
+		n.Value = &NutanixAdditionalTrustBundle{
+			Kind: NutanixTrustBundleKindString,
+			Data: rawStr,
+		}
+		return nil
+	}
+
+	// Try to unmarshal as full struct
+	var full NutanixAdditionalTrustBundle
+	if err := json.Unmarshal(data, &full); err != nil {
+		return fmt.Errorf("invalid trust bundle format: %w", err)
+	}
+
+	n.Value = &full
+	return nil
 }
 
 // NutanixDatacenterFailureDomain defines the failure domain for the Nutanix Datacenter.
@@ -153,8 +202,8 @@ func (in *NutanixDatacenterConfig) Validate() error {
 		return errors.New("NutanixDatacenterConfig port is not set or is empty")
 	}
 
-	if len(in.Spec.AdditionalTrustBundle) > 0 {
-		certPem := []byte(in.Spec.AdditionalTrustBundle)
+	if in.Spec.AdditionalTrustBundle.Value != nil && in.Spec.AdditionalTrustBundle.Value.Kind == NutanixTrustBundleKindString {
+		certPem := []byte(in.Spec.AdditionalTrustBundle.Value.Data)
 		block, _ := pem.Decode(certPem)
 		if block == nil {
 			return errors.New("NutanixDatacenterConfig additionalTrustBundle is not valid: could not find a PEM block in the certificate")

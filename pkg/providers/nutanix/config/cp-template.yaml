@@ -1,4 +1,14 @@
 {{- $kube_minor_version := (index (splitList "." (trimPrefix "v" .kubernetesVersion)) 1) -}}
+{{- if .additionalTrustBundle }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{.clusterName}}-additional-trust-bundle"
+  namespace: "{{.eksaSystemNamespace}}"
+data:
+  ca.crt: {{.additionalTrustBundle}}
+---
+{{- end}}
 apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
 kind: NutanixCluster
 metadata:
@@ -33,12 +43,12 @@ spec:
   failureDomains: []
 {{- end}}
   prismCentral:
-{{- if .nutanixAdditionalTrustBundle }}
+  {{- if .nutanixAdditionalTrustBundle }}
     additionalTrustBundle:
-      kind: String
-      data: |
-{{ .nutanixAdditionalTrustBundle | indent 8 }}
-{{- end }}
+      kind: ConfigMap
+      name: "{{.clusterName}}-additional-trust-bundle"
+      namespace: "{{ .eksaSystemNamespace }}"
+  {{- end }}
     address: "{{.nutanixEndpoint}}"
     port: {{.nutanixPort}}
     insecure: {{.nutanixInsecure}}

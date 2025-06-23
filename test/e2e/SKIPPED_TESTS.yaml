@@ -3,6 +3,7 @@ skipped_tests:
 # CloudStack
 # Airgapped tests due to an airgapped network not being setup properly on the cloudstack CI env.
 - TestCloudStackKubernetes132RedhatAirgappedProxy
+- TestCloudStackKubernetes133RedhatAirgappedProxy
 
 # Proxy API tests skipped due to being unable to run in cloudstack CI env. We should probably revisit these and see if we can unskip them now
 # as we have a proxy env set up in the cloudstack CI env now.
@@ -13,6 +14,7 @@ skipped_tests:
 - TestCloudStackKubernetes130MultiEndpointSimpleFlow
 - TestCloudStackKubernetes131MultiEndpointSimpleFlow
 - TestCloudStackKubernetes132MultiEndpointSimpleFlow
+- TestCloudStackKubernetes133MultiEndpointSimpleFlow
 
 # Nutanix
 
@@ -51,11 +53,12 @@ skipped_tests:
 - TestTinkerbellKubernetes129Ubuntu2004To2204Upgrade
 - TestTinkerbellKubernetes130Ubuntu2004To2204Upgrade
 
-# Skip single K8s version upgrade tests as the same is covered by multiple K8s version upgrade from 1.28 to 1.32 to save on hardware resources and running time
+# Skip single K8s version upgrade tests as the same is covered by multiple K8s version upgrade from 1.28 to 1.33 to save on hardware resources and running time
 - TestTinkerbellKubernetes128UbuntuTo129Upgrade
 - TestTinkerbellKubernetes129UbuntuTo130Upgrade
 - TestTinkerbellKubernetes130UbuntuTo131Upgrade
 - TestTinkerbellKubernetes131UbuntuTo132Upgrade
+- TestTinkerbellKubernetes132UbuntuTo133Upgrade
 
 # Tinkerbell Packages
 # Skip test cases for packages other than hello-eks-anywhere and not for K8s 1.32.
@@ -71,3 +74,13 @@ skipped_tests:
 - TestTinkerbellKubernetes130ThreeReplicasTwoWorkersConformanceFlow
 - TestTinkerbellKubernetes131ThreeReplicasTwoWorkersConformanceFlow
 - TestTinkerbellKubernetes132ThreeReplicasTwoWorkersConformanceFlow
+
+# Vsphere 
+# Auto import tests fail from time to time if the underlying template doesn't go well with the content library.
+# Currently there's no fix for this and issue has been brought up with the BR team multiple times.
+- TestVSphereKubernetes128BottlerocketAutoimport
+- TestVSphereKubernetes129BottlerocketAutoimport
+- TestVSphereKubernetes130BottlerocketAutoimport
+- TestVSphereKubernetes131BottlerocketAutoimport
+- TestVSphereKubernetes132BottlerocketAutoimport
+- TestVSphereKubernetes133BottlerocketAutoimport

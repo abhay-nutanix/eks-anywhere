@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	eksdv1alpha1 "github.com/aws/eks-distro-build-tooling/release/api/v1alpha1"
 	"github.com/go-logr/logr"
 	"github.com/pkg/errors"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -29,7 +30,6 @@ import (
 	"github.com/aws/eks-anywhere/pkg/controller/handlers"
 	"github.com/aws/eks-anywhere/pkg/controller/serverside"
 	"github.com/aws/eks-anywhere/pkg/curatedpackages"
-	"github.com/aws/eks-anywhere/pkg/features"
 	"github.com/aws/eks-anywhere/pkg/providers/vsphere"
 	"github.com/aws/eks-anywhere/pkg/registrymirror"
 	"github.com/aws/eks-anywhere/pkg/utils/ptr"
@@ -472,7 +472,7 @@ func (r *ClusterReconciler) preClusterProviderReconcile(ctx context.Context, log
 		return controller.Result{}, err
 	}
 
-	if err := validateExtendedK8sVersionSupport(ctx, r.client, cluster); err != nil {
+	if err := validateExtendedKubernetesVersionSupport(ctx, r.client, cluster); err != nil {
 		return controller.Result{}, err
 	}
 
@@ -546,8 +546,7 @@ func (r *ClusterReconciler) updateStatus(ctx context.Context, log logr.Logger, c
 
 	defaultCNIConfiguredCondition := conditions.Get(cluster, anywherev1.DefaultCNIConfiguredCondition)
 	if defaultCNIConfiguredCondition == nil ||
-		(defaultCNIConfiguredCondition != nil &&
-			defaultCNIConfiguredCondition.Status == "False" &&
+		(defaultCNIConfiguredCondition.Status == "False" &&
 			defaultCNIConfiguredCondition.Reason != anywherev1.SkipUpgradesForDefaultCNIConfiguredReason) {
 		summarizedConditionTypes = append(summarizedConditionTypes, anywherev1.DefaultCNIConfiguredCondition)
 	}
@@ -574,11 +573,8 @@ func (r *ClusterReconciler) reconcileDelete(ctx context.Context, log logr.Logger
 	// These CRs are not migrated over during pivot and must be present to cleanly delete vspheremachines
 	// This solution isn't ideal, but would require redesign
 	if cluster.Spec.DatacenterRef.Kind == "VSphereDatacenterConfig" && cluster.IsSelfManaged() {
-		if features.IsActive(features.VsphereFailureDomainEnabled()) {
-			log.Info("Creating vspheredeploymentzones and vspherefailuredomains on bootstrap")
-			if err := r.applyFailureDomains(ctx, log, cluster); err != nil {
-				return ctrl.Result{}, err
-			}
+		if err := r.applyFailureDomains(ctx, log, cluster); err != nil {
+			return ctrl.Result{}, err
 		}
 	}
 
@@ -646,6 +642,12 @@ func (m *FailureDomainMover) ApplyFailureDomains(ctx context.Context, log logr.L
 		return err
 	}
 
+	// Check if VSphereDatacenter has no failure domains
+	if len(clusterSpec.VSphereDatacenter.Spec.FailureDomains) == 0 {
+		return nil
+	}
+
+	log.Info("Creating vspheredeploymentzones and vspherefailuredomains on bootstrap")
 	fd, err := m.fdSpecBuilder.BuildFailureDomainSpec(log, clusterSpec)
 	if err != nil {
 		return err
@@ -755,7 +757,7 @@ func validateEksaRelease(ctx context.Context, client client.Client, cluster *any
 	return nil
 }
 
-func validateExtendedK8sVersionSupport(ctx context.Context, client client.Client, cluster *anywherev1.Cluster) error {
+func validateExtendedKubernetesVersionSupport(ctx context.Context, client client.Client, cluster *anywherev1.Cluster) error {
 	eksaVersion := cluster.Spec.EksaVersion
 	if cluster.Spec.DatacenterRef.Kind == "SnowDatacenterConfig" || eksaVersion == nil {
 		return nil
@@ -777,7 +779,17 @@ func validateExtendedK8sVersionSupport(ctx context.Context, client client.Client
 		cluster.Status.FailureReason = &reason
 		return fmt.Errorf("getting bundle for cluster: %w", err)
 	}
-	if err = validations.ValidateExtendedK8sVersionSupport(ctx, *cluster, bundle, clientutil.NewKubeClient(client)); err != nil {
+
+	// Get the release manifest using Kubernetes client
+	releaseManifest, err := getReleaseManifestFromCluster(ctx, *cluster, bundle, clientutil.NewKubeClient(client))
+	if err != nil {
+		reason := anywherev1.ExtendedK8sVersionSupportNotSupportedReason
+		cluster.Status.FailureMessage = ptr.String(fmt.Sprintf("getting release manifest: %v", err))
+		cluster.Status.FailureReason = &reason
+		return fmt.Errorf("getting release manifest: %w", err)
+	}
+
+	if err = validations.ValidateExtendedK8sVersionSupport(ctx, *cluster, bundle, releaseManifest, clientutil.NewKubeClient(client)); err != nil {
 		reason := anywherev1.ExtendedK8sVersionSupportNotSupportedReason
 		cluster.Status.FailureMessage = ptr.String(err.Error())
 		cluster.Status.FailureReason = &reason
@@ -785,4 +797,20 @@ func validateExtendedK8sVersionSupport(ctx context.Context, client client.Client
 
 	}
 	return nil
+}
+
+// getReleaseManifestFromCluster retrieves the EKS Distro release manifest using the Kubernetes client.
+// This is used in the controller context where we always use the Kubernetes client to fetch the manifest.
+func getReleaseManifestFromCluster(ctx context.Context, clusterSpec anywherev1.Cluster, bundle *v1alpha1.Bundles, k *clientutil.KubeClient) (*eksdv1alpha1.Release, error) {
+	versionsBundle, err := c.GetVersionsBundle(clusterSpec.Spec.KubernetesVersion, bundle)
+	if err != nil {
+		return nil, fmt.Errorf("getting versions bundle for %s kubernetes version: %w", clusterSpec.Spec.KubernetesVersion, err)
+	}
+
+	releaseManifest := &eksdv1alpha1.Release{}
+	if err := k.Get(ctx, versionsBundle.EksD.Name, constants.EksaSystemNamespace, releaseManifest); err != nil {
+		return nil, fmt.Errorf("getting %s eks distro release: %w", versionsBundle.EksD.Name, err)
+	}
+
+	return releaseManifest, nil
 }

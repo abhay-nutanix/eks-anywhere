@@ -229,7 +229,7 @@ func GetAndValidateClusterConfig(fileName string) (*Cluster, error) {
 
 // GetClusterDefaultKubernetesVersion returns the default kubernetes version for a Cluster.
 func GetClusterDefaultKubernetesVersion() KubernetesVersion {
-	return Kube132
+	return Kube133
 }
 
 // ValidateClusterConfigContent validates a Cluster object without modifying it
@@ -625,10 +625,6 @@ func validateWorkerNodeGroups(clusterConfig *Cluster) error {
 
 		if err := validateMDUpgradeRolloutStrategy(&workerNodeGroupConfig, clusterConfig.Spec.DatacenterRef.Kind); err != nil {
 			return fmt.Errorf("validating upgrade rollout strategy configuration: %v", err)
-		}
-
-		if err := validateFailureDomain(&workerNodeGroupConfig, clusterConfig.Spec.DatacenterRef.Kind); err != nil {
-			return fmt.Errorf("validating failure domain: %v", err)
 		}
 
 		if workerNodeGroupNames[workerNodeGroupConfig.Name] {
@@ -1079,14 +1075,5 @@ func validateEksaVersion(clusterConfig *Cluster) error {
 		}
 	}
 
-	return nil
-}
-
-func validateFailureDomain(w *WorkerNodeGroupConfiguration, datacenterRefKind string) error {
-	if datacenterRefKind == VSphereDatacenterKind {
-		if !features.IsActive(features.VsphereFailureDomainEnabled()) && len(w.FailureDomains) > 0 {
-			return fmt.Errorf("Failure Domains feature is not enabled. Please set the env variable %v", features.VSphereFailureDomainEnabledEnvVar)
-		}
-	}
 	return nil
 }

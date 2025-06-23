@@ -1083,12 +1083,6 @@ func TestGetAndValidateClusterConfig(t *testing.T) {
 			wantCluster: nil,
 			wantErr:     true,
 		},
-		{
-			testName:    "valid cluster config with vsphere failure domains disabled",
-			fileName:    "testdata/vsphere_cluster_valid_failuredomains.yaml",
-			wantCluster: nil,
-			wantErr:     true,
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.testName, func(t *testing.T) {
@@ -4043,7 +4037,7 @@ func TestValidateEksaVersion(t *testing.T) {
 
 func TestGetClusterDefaultKubernetesVersion(t *testing.T) {
 	g := NewWithT(t)
-	g.Expect(GetClusterDefaultKubernetesVersion()).To(Equal(Kube132))
+	g.Expect(GetClusterDefaultKubernetesVersion()).To(Equal(Kube133))
 }
 
 func TestClusterWorkerNodeConfigCount(t *testing.T) {

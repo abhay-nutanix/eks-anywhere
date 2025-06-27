@@ -249,3 +249,11 @@ func (mr *MockProviderKubectlClientMockRecorder) UpdateAnnotation(ctx, resourceT
 	varargs := append([]interface{}{ctx, resourceType, objectName, annotations}, opts...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateAnnotation", reflect.TypeOf((*MockProviderKubectlClient)(nil).UpdateAnnotation), varargs...)
 }
+
+// DeleteEksaNutanixClusterResourceSet mocks base method.
+func (m *MockProviderKubectlClient) DeleteEksaNutanixClusterResourceSet(ctx context.Context, kubeconfigFile, clusterName, namespace string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteEksaNutanixClusterResourceSet", ctx, kubeconfigFile, clusterName, namespace)
+	ret0, _ := ret[0].(error)
+	return ret0
+}

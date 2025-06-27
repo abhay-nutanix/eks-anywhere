@@ -250,6 +250,7 @@ func TestNutanixProviderDeleteResources(t *testing.T) {
 	executable := mockexecutables.NewMockExecutable(ctrl)
 	executable.EXPECT().Execute(gomock.Any(), "delete", []string{"nutanixdatacenterconfigs.anywhere.eks.amazonaws.com", "eksa-unit-test", "--kubeconfig", "testdata/kubeconfig.yaml", "--namespace", "default", "--ignore-not-found=true"}, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(bytes.Buffer{}, nil)
 	executable.EXPECT().Execute(gomock.Any(), "delete", []string{"nutanixmachineconfigs.anywhere.eks.amazonaws.com", "eksa-unit-test", "--kubeconfig", "testdata/kubeconfig.yaml", "--namespace", "default", "--ignore-not-found=true"}, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(bytes.Buffer{}, nil)
+	executable.EXPECT().Execute(gomock.Any(), "delete", []string{"clusterresourcesets.addons.cluster.x-k8s.io", "eksa-unit-test-nutanix-ccm-crs", "--kubeconfig", "testdata/kubeconfig.yaml", "--namespace", "default", "--ignore-not-found=true"}, gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any(), gomock.Any()).Return(bytes.Buffer{}, nil)
 	kubectl := executables.NewKubectl(executable)
 
 	mockClient := mocknutanix.NewMockClient(ctrl)

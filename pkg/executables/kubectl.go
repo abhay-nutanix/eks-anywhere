@@ -2470,6 +2470,40 @@ func (k *Kubectl) DeleteEksaNutanixMachineConfig(ctx context.Context, nutanixMac
 	return nil
 }
 
+func (k *Kubectl) DeleteEksaNutanixClusterResourceSet(ctx context.Context, kubeconfigFile, name, namespace string) error {
+	logger.V(0).Info("Deleting ClusterResourceSet", "name", name, "namespace", namespace)
+	params := []string{"delete", clusterResourceSetResourceType, name, "--kubeconfig", kubeconfigFile, "--namespace", namespace, "--ignore-not-found=true"}
+	_, err := k.Execute(ctx, params...)
+	if err != nil {
+		return fmt.Errorf("deleting ClusterResourceSet %s: %v", name, err)
+	}
+	return nil
+}
+
+func (k *Kubectl) RemoveFinalizerFromClusterResourceSet(ctx context.Context, clusterName, kubeconfig, namespace string) error {
+	crsName := fmt.Sprintf("%s-nutanix-ccm-crs", clusterName)
+
+	// Patch to remove finalizer
+	patch := `{"metadata":{"finalizers":null}}`
+
+	// Correct the patch logic
+	params := []string{
+		"patch",
+		"clusterresourcesets.addons.cluster.x-k8s.io",
+		crsName,
+		"--kubeconfig", kubeconfig,
+		"--namespace", namespace,
+		"-p", patch,
+	}
+
+	_, err := k.Execute(ctx, params...)
+	if err != nil {
+		return fmt.Errorf("failed to remove finalizer from ClusterResourceSet %s: %v", crsName, err)
+	}
+
+	return nil
+}
+
 // AllBaseboardManagements returns all the baseboard management resources in the cluster.
 func (k *Kubectl) AllBaseboardManagements(ctx context.Context, kubeconfig string) ([]rufiounreleased.BaseboardManagement, error) {
 	stdOut, err := k.Execute(ctx,

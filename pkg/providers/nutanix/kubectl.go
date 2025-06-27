@@ -26,4 +26,6 @@ type ProviderKubectlClient interface {
 	DeleteEksaNutanixDatacenterConfig(ctx context.Context, nutanixDatacenterConfigName string, kubeconfigFile string, namespace string) error
 	DeleteEksaNutanixMachineConfig(ctx context.Context, nutanixMachineConfigName string, kubeconfigFile string, namespace string) error
 	UpdateAnnotation(ctx context.Context, resourceType, objectName string, annotations map[string]string, opts ...executables.KubectlOpt) error
+	DeleteEksaNutanixClusterResourceSet(ctx context.Context, kubeconfigFile, clusterName, namespace string) error
+	RemoveFinalizerFromClusterResourceSet(ctx context.Context, clusterName, kubeconfig, namespace string) error
 }

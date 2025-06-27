@@ -178,7 +178,20 @@ func (p *Provider) DeleteResources(ctx context.Context, clusterSpec *cluster.Spe
 			return err
 		}
 	}
-	return p.kubectlClient.DeleteEksaNutanixDatacenterConfig(ctx, clusterSpec.NutanixDatacenter.Name, clusterSpec.ManagementCluster.KubeconfigFile, clusterSpec.NutanixDatacenter.Namespace)
+	err := p.kubectlClient.DeleteEksaNutanixDatacenterConfig(ctx, clusterSpec.NutanixDatacenter.Name, clusterSpec.ManagementCluster.KubeconfigFile, clusterSpec.NutanixDatacenter.Namespace)
+	if err != nil {
+		return err
+	}
+	logger.Info("Deleting ClusterResourceSet", "name", "clusterSpec.Cluster.Name"+"-nutanix-ccm-crs", "namespace", clusterSpec.NutanixDatacenter.Namespace)
+	err = p.kubectlClient.RemoveFinalizerFromClusterResourceSet(ctx, clusterSpec.Cluster.Name, clusterSpec.ManagementCluster.KubeconfigFile, clusterSpec.NutanixDatacenter.Namespace)
+	if err != nil {
+		return err
+	}
+	err = p.kubectlClient.DeleteEksaNutanixClusterResourceSet(ctx, clusterSpec.ManagementCluster.KubeconfigFile, clusterSpec.Cluster.Name+"-nutanix-ccm-crs", clusterSpec.NutanixDatacenter.Namespace)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func (p *Provider) PostClusterDeleteValidate(ctx context.Context, managementCluster *types.Cluster) error {

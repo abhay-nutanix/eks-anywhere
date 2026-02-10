@@ -12,10 +12,11 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
-	"github.com/nutanix-cloud-native/prism-go-client/utils"
 	v3 "github.com/nutanix-cloud-native/prism-go-client/v3"
+	"github.com/nutanix-cloud-native/prism-go-client/v3/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"k8s.io/utils/ptr"
 	"sigs.k8s.io/yaml"
 
 	"github.com/aws/eks-anywhere/internal/test"
@@ -241,60 +242,64 @@ func TestNutanixProviderSetupAndValidateCreate(t *testing.T) {
 		Entities: []*v3.ClusterIntentResponse{
 			{
 				Metadata: &v3.Metadata{
-					UUID: utils.StringPtr("a15f6966-bfc7-4d1e-8575-224096fc1cda"),
+					UUID: ptr.To[string]("a15f6966-bfc7-4d1e-8575-224096fc1cda"),
 				},
-				Spec: &v3.Cluster{
-					Name: utils.StringPtr("prism-cluster"),
+				Spec: &models.Cluster{
+					Name: "prism-cluster",
 				},
-				Status: &v3.ClusterDefStatus{
-					Resources: &v3.ClusterObj{
-						Config: &v3.ClusterConfig{
-							ServiceList: []*string{utils.StringPtr("AOS")},
+				Status: &models.ClusterDefStatus{
+					Name: "prism-cluster",
+					Resources: &models.ClusterDefStatusResources{
+						Config: &models.ClusterConfig{
+							ServiceList: []*string{ptr.To[string]("AOS")},
 						},
 					},
 				},
 			},
 			{
 				Metadata: &v3.Metadata{
-					UUID: utils.StringPtr("4692a614-85e7-4abc-9bf3-8fb0f9d790bc"),
+					UUID: ptr.To[string]("4692a614-85e7-4abc-9bf3-8fb0f9d790bc"),
 				},
-				Spec: &v3.Cluster{
-					Name: utils.StringPtr("prism-central"),
+				Spec: &models.Cluster{
+					Name: "prism-central",
 				},
-				Status: &v3.ClusterDefStatus{
-					Resources: &v3.ClusterObj{
-						Config: &v3.ClusterConfig{
-							ServiceList: []*string{utils.StringPtr("PRISM_CENTRAL")},
+				Status: &models.ClusterDefStatus{
+					Name: "prism-central",
+					Resources: &models.ClusterDefStatusResources{
+						Config: &models.ClusterConfig{
+							ServiceList: []*string{ptr.To[string]("PRISM_CENTRAL")},
 						},
 					},
 				},
 			},
 			{
 				Metadata: &v3.Metadata{
-					UUID: utils.StringPtr("a15f6966-bfc7-4d1e-8575-224096fc1abc"),
+					UUID: ptr.To[string]("a15f6966-bfc7-4d1e-8575-224096fc1abc"),
 				},
-				Spec: &v3.Cluster{
-					Name: utils.StringPtr("prism-cluster-2"),
+				Spec: &models.Cluster{
+					Name: "prism-cluster-2",
 				},
-				Status: &v3.ClusterDefStatus{
-					Resources: &v3.ClusterObj{
-						Config: &v3.ClusterConfig{
-							ServiceList: []*string{utils.StringPtr("AOS")},
+				Status: &models.ClusterDefStatus{
+					Name: "prism-cluster-2",
+					Resources: &models.ClusterDefStatusResources{
+						Config: &models.ClusterConfig{
+							ServiceList: []*string{ptr.To[string]("AOS")},
 						},
 					},
 				},
 			},
 			{
 				Metadata: &v3.Metadata{
-					UUID: utils.StringPtr("a15f6966-bfc7-4d1e-8575-224096fc1xyz"),
+					UUID: ptr.To[string]("a15f6966-bfc7-4d1e-8575-224096fc1xyz"),
 				},
-				Spec: &v3.Cluster{
-					Name: utils.StringPtr("prism-cluster-3"),
+				Spec: &models.Cluster{
+					Name: "prism-cluster-3",
 				},
-				Status: &v3.ClusterDefStatus{
-					Resources: &v3.ClusterObj{
-						Config: &v3.ClusterConfig{
-							ServiceList: []*string{utils.StringPtr("AOS")},
+				Status: &models.ClusterDefStatus{
+					Name: "prism-cluster-3",
+					Resources: &models.ClusterDefStatusResources{
+						Config: &models.ClusterConfig{
+							ServiceList: []*string{ptr.To[string]("AOS")},
 						},
 					},
 				},
@@ -306,14 +311,14 @@ func TestNutanixProviderSetupAndValidateCreate(t *testing.T) {
 		Entities: []*v3.SubnetIntentResponse{
 			{
 				Metadata: &v3.Metadata{
-					UUID: utils.StringPtr("a15f6966-bfc7-4d1e-8575-224096fc1cdb"),
+					UUID: ptr.To[string]("a15f6966-bfc7-4d1e-8575-224096fc1cdb"),
 				},
-				Spec: &v3.Subnet{
-					Name: utils.StringPtr("prism-subnet"),
-					ClusterReference: &v3.Reference{
-						Kind: utils.StringPtr("cluster"),
-						UUID: utils.StringPtr("a15f6966-bfc7-4d1e-8575-224096fc1cda"),
-						Name: utils.StringPtr("prism-cluster"),
+				Spec: &models.Subnet{
+					Name: ptr.To[string]("prism-subnet"),
+					ClusterReference: &models.ClusterReference{
+						Kind: "cluster",
+						UUID: ptr.To[string]("a15f6966-bfc7-4d1e-8575-224096fc1cda"),
+						Name: "prism-cluster",
 					},
 				},
 			},
@@ -324,18 +329,18 @@ func TestNutanixProviderSetupAndValidateCreate(t *testing.T) {
 		Entities: []*v3.ImageIntentResponse{
 			{
 				Metadata: &v3.Metadata{
-					UUID: utils.StringPtr("a15f6966-bfc7-4d1e-8575-224096fc1cdc"),
+					UUID: ptr.To[string]("a15f6966-bfc7-4d1e-8575-224096fc1cdc"),
 				},
 				Spec: &v3.Image{
-					Name: utils.StringPtr("prism-image"),
+					Name: ptr.To[string]("prism-image"),
 				},
 			},
 			{
 				Metadata: &v3.Metadata{
-					UUID: utils.StringPtr("a15f6966-bfc7-4d1e-8575-224096fc1cdd"),
+					UUID: ptr.To[string]("a15f6966-bfc7-4d1e-8575-224096fc1cdd"),
 				},
 				Spec: &v3.Image{
-					Name: utils.StringPtr("prism-image-1-19"),
+					Name: ptr.To[string]("prism-image-1-19"),
 				},
 			},
 		},

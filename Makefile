@@ -478,7 +478,7 @@ test: unit-test capd-test  ## Run unit and capd tests
 unit-test: ## Run unit tests
 unit-test: envtest-setup
 unit-test:
-	KUBEBUILDER_ASSETS="$(KUBEBUILDER_ASSETS)" $(GO_TEST) $(UNIT_TEST_PACKAGES) -cover -tags "$(BUILD_TAGS)" $(GO_TEST_FLAGS)
+	KUBEBUILDER_ASSETS="$(KUBEBUILDER_ASSETS)" $(GO_TEST) $(UNIT_TEST_PACKAGES) -cover -tags "$(BUILD_TAGS)" $(GO_TEST_FLAGS) 2>&1 | grep -v "go: no such tool"; exit $${PIPESTATUS[0]}
 
 
 # unit-test-patch is a convenience target that restricts test runs to modified

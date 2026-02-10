@@ -1,36 +1,42 @@
 {{- $kube_minor_version := (index (splitList "." (trimPrefix "v" .kubernetesVersion)) 1) -}}
+{{- range .nutanixFailureDomains -}}
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+kind: NutanixFailureDomain
+metadata:
+  name: "{{ .Name }}"
+  namespace: "{{ .Namespace }}"
+spec:
+  prismElementCluster:
+  {{- if (eq .Spec.PrismElementCluster.Type "uuid") }}
+    type: "uuid"
+    uuid: "{{ .Spec.PrismElementCluster.UUID }}"
+  {{- else if (eq .Spec.PrismElementCluster.Type "name") }}
+    type: "name"
+    name: "{{ .Spec.PrismElementCluster.Name }}"
+  {{- end}}
+  subnets:
+  {{- range .Spec.Subnets}}
+    {{- if (eq .Type "uuid") }}
+  - type: "uuid"
+    uuid: "{{ .UUID }}"
+    {{- else if (eq .Type "name") }}
+  - type: "name"
+    name: "{{ .Name }}"
+    {{- end}}
+  {{- end}}
+---
+{{end -}}
 apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
 kind: NutanixCluster
 metadata:
   name: "{{.clusterName}}"
   namespace: "{{.eksaSystemNamespace}}"
 spec:
-{{- if .failureDomains }}
-  failureDomains:
-  {{- range $index, $value := .failureDomains}}
-  - name: "{{ $value.Name }}"
-    cluster:
-    {{- if (eq $value.Cluster.Type "uuid") }}
-      type: "uuid"
-      uuid: "{{ $value.Cluster.UUID }}"
-    {{- else if (eq $value.Cluster.Type "name") }}
-      type: "name"
-      name: "{{ $value.Cluster.Name }}"
-    {{- end}}
-    subnets:
-    {{- range $value.Subnets}}
-      {{- if (eq .Type "uuid") }}
-    - type: "uuid"
-      uuid: "{{ .UUID }}"
-      {{- else if (eq .Type "name") }}
-    - type: "name"
-      name: "{{ .Name }}"
-      {{- end}}
-    {{- end}}
-    controlPlane: true
+{{- if .controlPlaneFailureDomainRefs }}
+  controlPlaneFailureDomains:
+  {{- range .controlPlaneFailureDomainRefs}}
+  - name: "{{ .name }}"
   {{- end }}
-{{- else }}
-  failureDomains: []
 {{- end}}
   prismCentral:
 {{- if .nutanixAdditionalTrustBundle }}

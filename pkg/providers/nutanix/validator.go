@@ -895,7 +895,7 @@ func findClusterUUIDByName(ctx context.Context, v3Client Client, clusterName str
 					isPrismCentral = true
 				}
 			}
-			if !isPrismCentral && *entity.Spec.Name == clusterName {
+			if !isPrismCentral && entity.Spec.Name == clusterName {
 				entities = append(entities, entity)
 			}
 		}

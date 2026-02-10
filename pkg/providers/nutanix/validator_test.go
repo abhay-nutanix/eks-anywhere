@@ -12,11 +12,12 @@ import (
 
 	"github.com/golang/mock/gomock"
 	prismgoclient "github.com/nutanix-cloud-native/prism-go-client"
-	"github.com/nutanix-cloud-native/prism-go-client/utils"
 	v3 "github.com/nutanix-cloud-native/prism-go-client/v3"
+	"github.com/nutanix-cloud-native/prism-go-client/v3/models"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"k8s.io/apimachinery/pkg/api/resource"
+	"k8s.io/utils/ptr"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/yaml"
 
@@ -88,15 +89,16 @@ func fakeClusterList() *v3.ClusterListIntentResponse {
 		Entities: []*v3.ClusterIntentResponse{
 			{
 				Metadata: &v3.Metadata{
-					UUID: utils.StringPtr("a15f6966-bfc7-4d1e-8575-224096fc1cdb"),
+					UUID: ptr.To[string]("a15f6966-bfc7-4d1e-8575-224096fc1cdb"),
 				},
-				Spec: &v3.Cluster{
-					Name: utils.StringPtr("prism-cluster"),
+				Spec: &models.Cluster{
+					Name: "prism-cluster",
 				},
-				Status: &v3.ClusterDefStatus{
-					Resources: &v3.ClusterObj{
-						Config: &v3.ClusterConfig{
-							ServiceList: []*string{utils.StringPtr("AOS")},
+				Status: &models.ClusterDefStatus{
+					Name: "prism-cluster",
+					Resources: &models.ClusterDefStatusResources{
+						Config: &models.ClusterConfig{
+							ServiceList: []*string{ptr.To[string]("AOS")},
 						},
 					},
 				},
@@ -110,14 +112,14 @@ func fakeSubnetList() *v3.SubnetListIntentResponse {
 		Entities: []*v3.SubnetIntentResponse{
 			{
 				Metadata: &v3.Metadata{
-					UUID: utils.StringPtr("b15f6966-bfc7-4d1e-8575-224096fc1cdb"),
+					UUID: ptr.To[string]("b15f6966-bfc7-4d1e-8575-224096fc1cdb"),
 				},
-				Spec: &v3.Subnet{
-					Name: utils.StringPtr("prism-subnet"),
-					ClusterReference: &v3.Reference{
-						Kind: utils.StringPtr("cluster"),
-						UUID: utils.StringPtr("a15f6966-bfc7-4d1e-8575-224096fc1cdb"),
-						Name: utils.StringPtr("prism-cluster"),
+				Spec: &models.Subnet{
+					Name: ptr.To[string]("prism-subnet"),
+					ClusterReference: &models.ClusterReference{
+						Kind: "cluster",
+						UUID: ptr.To[string]("a15f6966-bfc7-4d1e-8575-224096fc1cdb"),
+						Name: "prism-cluster",
 					},
 				},
 			},
@@ -130,30 +132,32 @@ func fakeClusterListForDCTest(filter string) (*v3.ClusterListIntentResponse, err
 		Entities: []*v3.ClusterIntentResponse{
 			{
 				Metadata: &v3.Metadata{
-					UUID: utils.StringPtr("a15f6966-bfc7-4d1e-8575-224096fc1cdb"),
+					UUID: ptr.To[string]("a15f6966-bfc7-4d1e-8575-224096fc1cdb"),
 				},
-				Spec: &v3.Cluster{
-					Name: utils.StringPtr("prism-cluster"),
+				Spec: &models.Cluster{
+					Name: "prism-cluster",
 				},
-				Status: &v3.ClusterDefStatus{
-					Resources: &v3.ClusterObj{
-						Config: &v3.ClusterConfig{
-							ServiceList: []*string{utils.StringPtr("AOS")},
+				Status: &models.ClusterDefStatus{
+					Name: "prism-cluster",
+					Resources: &models.ClusterDefStatusResources{
+						Config: &models.ClusterConfig{
+							ServiceList: []*string{ptr.To[string]("AOS")},
 						},
 					},
 				},
 			},
 			{
 				Metadata: &v3.Metadata{
-					UUID: utils.StringPtr("4d69ca7d-022f-49d1-a454-74535993bda4"),
+					UUID: ptr.To[string]("4d69ca7d-022f-49d1-a454-74535993bda4"),
 				},
-				Spec: &v3.Cluster{
-					Name: utils.StringPtr("prism-cluster-1"),
+				Spec: &models.Cluster{
+					Name: "prism-cluster-1",
 				},
-				Status: &v3.ClusterDefStatus{
-					Resources: &v3.ClusterObj{
-						Config: &v3.ClusterConfig{
-							ServiceList: []*string{utils.StringPtr("AOS")},
+				Status: &models.ClusterDefStatus{
+					Name: "prism-cluster-1",
+					Resources: &models.ClusterDefStatusResources{
+						Config: &models.ClusterConfig{
+							ServiceList: []*string{ptr.To[string]("AOS")},
 						},
 					},
 				},
@@ -168,7 +172,7 @@ func fakeClusterListForDCTest(filter string) (*v3.ClusterListIntentResponse, err
 	if filter != "" {
 		str := strings.Replace(filter, "name==", "", -1)
 		for _, cluster := range data.Entities {
-			if str == *cluster.Spec.Name {
+			if str == cluster.Spec.Name {
 				result.Entities = append(result.Entities, cluster)
 			}
 		}
@@ -184,27 +188,27 @@ func fakeSubnetListForDCTest(filter string) (*v3.SubnetListIntentResponse, error
 		Entities: []*v3.SubnetIntentResponse{
 			{
 				Metadata: &v3.Metadata{
-					UUID: utils.StringPtr("2d166190-7759-4dc6-b835-923262d6b497"),
+					UUID: ptr.To[string]("2d166190-7759-4dc6-b835-923262d6b497"),
 				},
-				Spec: &v3.Subnet{
-					Name: utils.StringPtr("prism-subnet"),
-					ClusterReference: &v3.Reference{
-						Kind: utils.StringPtr("cluster"),
-						UUID: utils.StringPtr("4d69ca7d-022f-49d1-a454-74535993bda4"),
-						Name: utils.StringPtr("prism-cluster-1"),
+				Spec: &models.Subnet{
+					Name: ptr.To[string]("prism-subnet"),
+					ClusterReference: &models.ClusterReference{
+						Kind: "cluster",
+						UUID: ptr.To[string]("4d69ca7d-022f-49d1-a454-74535993bda4"),
+						Name: "prism-cluster-1",
 					},
 				},
 			},
 			{
 				Metadata: &v3.Metadata{
-					UUID: utils.StringPtr("2d166190-7759-4dc6-b835-923262d6b497"),
+					UUID: ptr.To[string]("2d166190-7759-4dc6-b835-923262d6b497"),
 				},
-				Spec: &v3.Subnet{
-					Name: utils.StringPtr("prism-subnet-1"),
-					ClusterReference: &v3.Reference{
-						Kind: utils.StringPtr("cluster"),
-						UUID: utils.StringPtr("a15f6966-bfc7-4d1e-8575-224096fc1cdb"),
-						Name: utils.StringPtr("prism-cluster"),
+				Spec: &models.Subnet{
+					Name: ptr.To[string]("prism-subnet-1"),
+					ClusterReference: &models.ClusterReference{
+						Kind: "cluster",
+						UUID: ptr.To[string]("a15f6966-bfc7-4d1e-8575-224096fc1cdb"),
+						Name: "prism-cluster",
 					},
 				},
 			},
@@ -235,10 +239,10 @@ func fakeImageList() *v3.ImageListIntentResponse {
 		Entities: []*v3.ImageIntentResponse{
 			{
 				Metadata: &v3.Metadata{
-					UUID: utils.StringPtr("c15f6966-bfc7-4d1e-8575-224096fc1cdb"),
+					UUID: ptr.To[string]("c15f6966-bfc7-4d1e-8575-224096fc1cdb"),
 				},
 				Spec: &v3.Image{
-					Name: utils.StringPtr("prism-image"),
+					Name: ptr.To[string]("prism-image"),
 				},
 			},
 		},
@@ -250,7 +254,7 @@ func fakeProjectList() *v3.ProjectListResponse {
 		Entities: []*v3.Project{
 			{
 				Metadata: &v3.Metadata{
-					UUID: utils.StringPtr("5c9a0641-1025-40ed-9e1d-0d0a23043e57"),
+					UUID: ptr.To[string]("5c9a0641-1025-40ed-9e1d-0d0a23043e57"),
 				},
 				Spec: &v3.ProjectSpec{
 					Name: "project",
@@ -511,7 +515,7 @@ func TestNutanixValidatorValidateMachineConfig(t *testing.T) {
 				var cluster v3.ClusterIntentResponse
 				err = json.Unmarshal(tmp, &cluster)
 				assert.NoError(t, err)
-				cluster.Status.Resources.Config.ServiceList = []*string{utils.StringPtr("PRISM_CENTRAL")}
+				cluster.Status.Resources.Config.ServiceList = []*string{ptr.To[string]("PRISM_CENTRAL")}
 				clusters.Entities = append(clusters.Entities, &cluster)
 				mockClient.EXPECT().ListAllCluster(gomock.Any(), gomock.Any()).Return(clusters, nil).Times(2)
 				mockClient.EXPECT().ListAllSubnet(gomock.Any(), gomock.Any(), gomock.Any()).Return(fakeSubnetList(), nil)
@@ -575,7 +579,7 @@ func TestNutanixValidatorValidateMachineConfig(t *testing.T) {
 				mockClient.EXPECT().ListAllProject(gomock.Any(), gomock.Any()).Return(nil, errors.New("project not found"))
 				machineConf.Spec.Project = &anywherev1.NutanixResourceIdentifier{
 					Type: anywherev1.NutanixIdentifierName,
-					Name: utils.StringPtr("notaproject"),
+					Name: ptr.To[string]("notaproject"),
 				}
 				clientCache := &ClientCache{clients: map[string]Client{"test": mockClient}}
 				return NewValidator(clientCache, validator, &http.Client{Transport: transport})
@@ -591,7 +595,7 @@ func TestNutanixValidatorValidateMachineConfig(t *testing.T) {
 				mockClient.EXPECT().ListAllProject(gomock.Any(), gomock.Any()).Return(&v3.ProjectListResponse{}, nil)
 				machineConf.Spec.Project = &anywherev1.NutanixResourceIdentifier{
 					Type: anywherev1.NutanixIdentifierName,
-					Name: utils.StringPtr("notaproject"),
+					Name: ptr.To[string]("notaproject"),
 				}
 				clientCache := &ClientCache{clients: map[string]Client{"test": mockClient}}
 				return NewValidator(clientCache, validator, &http.Client{Transport: transport})
@@ -609,7 +613,7 @@ func TestNutanixValidatorValidateMachineConfig(t *testing.T) {
 				mockClient.EXPECT().ListAllProject(gomock.Any(), gomock.Any()).Return(projects, nil)
 				machineConf.Spec.Project = &anywherev1.NutanixResourceIdentifier{
 					Type: anywherev1.NutanixIdentifierName,
-					Name: utils.StringPtr("project"),
+					Name: ptr.To[string]("project"),
 				}
 				clientCache := &ClientCache{clients: map[string]Client{"test": mockClient}}
 				return NewValidator(clientCache, validator, &http.Client{Transport: transport})
@@ -675,7 +679,7 @@ func TestNutanixValidatorValidateMachineConfig(t *testing.T) {
 				mockClient.EXPECT().ListAllSubnet(gomock.Any(), gomock.Any(), gomock.Any()).Return(fakeSubnetList(), nil)
 				mockClient.EXPECT().ListAllImage(gomock.Any(), gomock.Any()).Return(fakeImageList(), nil)
 				categoryKey := v3.CategoryKeyStatus{
-					Name: utils.StringPtr("key"),
+					Name: ptr.To[string]("key"),
 				}
 				mockClient.EXPECT().GetCategoryKey(gomock.Any(), gomock.Any()).Return(&categoryKey, nil)
 				mockClient.EXPECT().GetCategoryValue(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil, errors.New("category value not found"))
@@ -881,121 +885,121 @@ func fakeHostList() *v3.HostListResponse {
 						GPUList: []*v3.GPU{
 							{
 								Assignable: false,
-								DeviceID:   utils.Int64Ptr(8757),
+								DeviceID:   ptr.To[int64](8757),
 								Name:       "Ampere 40",
 								Mode:       "PASSTHROUGH_COMPUTE",
 							},
 							{
 								Assignable: true,
-								DeviceID:   utils.Int64Ptr(8757),
+								DeviceID:   ptr.To[int64](8757),
 								Name:       "Ampere 40",
 								Mode:       "PASSTHROUGH_COMPUTE",
 							},
 							{
 								Assignable: false,
-								DeviceID:   utils.Int64Ptr(8757),
+								DeviceID:   ptr.To[int64](8757),
 								Name:       "Ampere 40",
 								Mode:       "PASSTHROUGH_COMPUTE",
 							},
 							{
 								Assignable: true,
-								DeviceID:   utils.Int64Ptr(8757),
+								DeviceID:   ptr.To[int64](8757),
 								Name:       "Ampere 40",
 								Mode:       "PASSTHROUGH_COMPUTE",
 							},
 							{
 								Assignable: true,
-								DeviceID:   utils.Int64Ptr(557),
+								DeviceID:   ptr.To[int64](557),
 								Name:       "NVIDIA A40-1Q",
 								Mode:       "VIRTUAL",
 							},
 							{
 								Assignable: true,
-								DeviceID:   utils.Int64Ptr(557),
+								DeviceID:   ptr.To[int64](557),
 								Name:       "NVIDIA A40-1Q",
 								Mode:       "VIRTUAL",
 							},
 							{
 								Assignable: true,
-								DeviceID:   utils.Int64Ptr(557),
+								DeviceID:   ptr.To[int64](557),
 								Name:       "NVIDIA A40-1Q",
 								Mode:       "VIRTUAL",
 							},
 							{
 								Assignable: true,
-								DeviceID:   utils.Int64Ptr(557),
+								DeviceID:   ptr.To[int64](557),
 								Name:       "NVIDIA A40-1Q",
 								Mode:       "VIRTUAL",
 							},
 							{
 								Assignable: true,
-								DeviceID:   utils.Int64Ptr(557),
+								DeviceID:   ptr.To[int64](557),
 								Name:       "NVIDIA A40-1Q",
 								Mode:       "VIRTUAL",
 							},
 							{
 								Assignable: true,
-								DeviceID:   utils.Int64Ptr(557),
+								DeviceID:   ptr.To[int64](557),
 								Name:       "NVIDIA A40-1Q",
 								Mode:       "VIRTUAL",
 							},
 							{
 								Assignable: true,
-								DeviceID:   utils.Int64Ptr(557),
+								DeviceID:   ptr.To[int64](557),
 								Name:       "NVIDIA A40-1Q",
 								Mode:       "VIRTUAL",
 							},
 							{
 								Assignable: true,
-								DeviceID:   utils.Int64Ptr(557),
+								DeviceID:   ptr.To[int64](557),
 								Name:       "NVIDIA A40-1Q",
 								Mode:       "VIRTUAL",
 							},
 							{
 								Assignable: true,
-								DeviceID:   utils.Int64Ptr(557),
+								DeviceID:   ptr.To[int64](557),
 								Name:       "NVIDIA A40-1Q",
 								Mode:       "VIRTUAL",
 							},
 							{
 								Assignable: true,
-								DeviceID:   utils.Int64Ptr(557),
+								DeviceID:   ptr.To[int64](557),
 								Name:       "NVIDIA A40-1Q",
 								Mode:       "VIRTUAL",
 							},
 							{
 								Assignable: true,
-								DeviceID:   utils.Int64Ptr(557),
+								DeviceID:   ptr.To[int64](557),
 								Name:       "NVIDIA A40-1Q",
 								Mode:       "VIRTUAL",
 							},
 							{
 								Assignable: true,
-								DeviceID:   utils.Int64Ptr(557),
+								DeviceID:   ptr.To[int64](557),
 								Name:       "NVIDIA A40-1Q",
 								Mode:       "VIRTUAL",
 							},
 							{
 								Assignable: true,
-								DeviceID:   utils.Int64Ptr(557),
+								DeviceID:   ptr.To[int64](557),
 								Name:       "NVIDIA A40-1Q",
 								Mode:       "VIRTUAL",
 							},
 							{
 								Assignable: true,
-								DeviceID:   utils.Int64Ptr(557),
+								DeviceID:   ptr.To[int64](557),
 								Name:       "NVIDIA A40-1Q",
 								Mode:       "VIRTUAL",
 							},
 							{
 								Assignable: true,
-								DeviceID:   utils.Int64Ptr(557),
+								DeviceID:   ptr.To[int64](557),
 								Name:       "NVIDIA A40-1Q",
 								Mode:       "VIRTUAL",
 							},
 							{
 								Assignable: true,
-								DeviceID:   utils.Int64Ptr(557),
+								DeviceID:   ptr.To[int64](557),
 								Name:       "NVIDIA A40-1Q",
 								Mode:       "VIRTUAL",
 							},
@@ -1012,37 +1016,37 @@ func fakeHostList() *v3.HostListResponse {
 						GPUList: []*v3.GPU{
 							{
 								Assignable: false,
-								DeviceID:   utils.Int64Ptr(8757),
+								DeviceID:   ptr.To[int64](8757),
 								Name:       "Ampere 40",
 								Mode:       "PASSTHROUGH_COMPUTE",
 							},
 							{
 								Assignable: true,
-								DeviceID:   utils.Int64Ptr(8757),
+								DeviceID:   ptr.To[int64](8757),
 								Name:       "Ampere 40",
 								Mode:       "PASSTHROUGH_COMPUTE",
 							},
 							{
 								Assignable: true,
-								DeviceID:   utils.Int64Ptr(8757),
+								DeviceID:   ptr.To[int64](8757),
 								Name:       "Ampere 40",
 								Mode:       "PASSTHROUGH_COMPUTE",
 							},
 							{
 								Assignable: false,
-								DeviceID:   utils.Int64Ptr(8757),
+								DeviceID:   ptr.To[int64](8757),
 								Name:       "Ampere 40",
 								Mode:       "PASSTHROUGH_COMPUTE",
 							},
 							{
 								Assignable: true,
-								DeviceID:   utils.Int64Ptr(8757),
+								DeviceID:   ptr.To[int64](8757),
 								Name:       "Ampere 40",
 								Mode:       "PASSTHROUGH_COMPUTE",
 							},
 							{
 								Assignable: true,
-								DeviceID:   utils.Int64Ptr(8757),
+								DeviceID:   ptr.To[int64](8757),
 								Name:       "Ampere 40",
 								Mode:       "PASSTHROUGH_COMPUTE",
 							},
@@ -1073,45 +1077,48 @@ func fakeClusterListForFreeGPUTest() *v3.ClusterListIntentResponse {
 		Entities: []*v3.ClusterIntentResponse{
 			{
 				Metadata: &v3.Metadata{
-					UUID: utils.StringPtr("a15f6966-bfc7-4d1e-8575-224096fc1cdb"),
+					UUID: ptr.To[string]("a15f6966-bfc7-4d1e-8575-224096fc1cdb"),
 				},
-				Spec: &v3.Cluster{
-					Name: utils.StringPtr("prism-cluster"),
+				Spec: &models.Cluster{
+					Name: "prism-cluster",
 				},
-				Status: &v3.ClusterDefStatus{
-					Resources: &v3.ClusterObj{
-						Config: &v3.ClusterConfig{
-							ServiceList: []*string{utils.StringPtr("AOS")},
+				Status: &models.ClusterDefStatus{
+					Name: "prism-cluster",
+					Resources: &models.ClusterDefStatusResources{
+						Config: &models.ClusterConfig{
+							ServiceList: []*string{ptr.To[string]("AOS")},
 						},
 					},
 				},
 			},
 			{
 				Metadata: &v3.Metadata{
-					UUID: utils.StringPtr("4d69ca7d-022f-49d1-a454-74535993bda4"),
+					UUID: ptr.To[string]("4d69ca7d-022f-49d1-a454-74535993bda4"),
 				},
-				Spec: &v3.Cluster{
-					Name: utils.StringPtr("prism-cluster-1"),
+				Spec: &models.Cluster{
+					Name: "prism-cluster-1",
 				},
-				Status: &v3.ClusterDefStatus{
-					Resources: &v3.ClusterObj{
-						Config: &v3.ClusterConfig{
-							ServiceList: []*string{utils.StringPtr("AOS")},
+				Status: &models.ClusterDefStatus{
+					Name: "prism-cluster-1",
+					Resources: &models.ClusterDefStatusResources{
+						Config: &models.ClusterConfig{
+							ServiceList: []*string{ptr.To[string]("AOS")},
 						},
 					},
 				},
 			},
 			{
 				Metadata: &v3.Metadata{
-					UUID: utils.StringPtr("e0b1dfc7-5447-410f-b708-f9603e9be79a"),
+					UUID: ptr.To[string]("e0b1dfc7-5447-410f-b708-f9603e9be79a"),
 				},
-				Spec: &v3.Cluster{
-					Name: utils.StringPtr("prism-cluster-2"),
+				Spec: &models.Cluster{
+					Name: "prism-cluster-2",
 				},
-				Status: &v3.ClusterDefStatus{
-					Resources: &v3.ClusterObj{
-						Config: &v3.ClusterConfig{
-							ServiceList: []*string{utils.StringPtr("AOS")},
+				Status: &models.ClusterDefStatus{
+					Name: "prism-cluster-2",
+					Resources: &models.ClusterDefStatusResources{
+						Config: &models.ClusterConfig{
+							ServiceList: []*string{ptr.To[string]("AOS")},
 						},
 					},
 				},
@@ -1135,7 +1142,7 @@ func TestNutanixValidatorValidateFreeGPU(t *testing.T) {
 				mockClient.EXPECT().ListAllHost(gomock.Any()).Return(fakeHostList(), nil)
 				machineConfigs["cp"].Spec.Cluster = anywherev1.NutanixResourceIdentifier{
 					Type: anywherev1.NutanixIdentifierUUID,
-					UUID: utils.StringPtr("a15f6966-bfc7-4d1e-8575-224096fc1cdb"),
+					UUID: ptr.To[string]("a15f6966-bfc7-4d1e-8575-224096fc1cdb"),
 				}
 				machineConfigs["cp"].Spec.GPUs = []anywherev1.NutanixGPUIdentifier{
 					{
@@ -1144,12 +1151,12 @@ func TestNutanixValidatorValidateFreeGPU(t *testing.T) {
 					},
 					{
 						Type:     "deviceID",
-						DeviceID: utils.Int64Ptr(8757),
+						DeviceID: ptr.To[int64](8757),
 					},
 				}
 				machineConfigs["worker"].Spec.Cluster = anywherev1.NutanixResourceIdentifier{
 					Type: anywherev1.NutanixIdentifierUUID,
-					UUID: utils.StringPtr("a15f6966-bfc7-4d1e-8575-224096fc1cdb"),
+					UUID: ptr.To[string]("a15f6966-bfc7-4d1e-8575-224096fc1cdb"),
 				}
 				machineConfigs["worker"].Spec.GPUs = []anywherev1.NutanixGPUIdentifier{
 					{
@@ -1173,12 +1180,12 @@ func TestNutanixValidatorValidateFreeGPU(t *testing.T) {
 				mockClient.EXPECT().ListAllHost(gomock.Any()).Return(fakeHostList(), nil)
 				machineConfigs["cp"].Spec.Cluster = anywherev1.NutanixResourceIdentifier{
 					Type: anywherev1.NutanixIdentifierUUID,
-					UUID: utils.StringPtr("e0b1dfc7-5447-410f-b708-f9603e9be79a"),
+					UUID: ptr.To[string]("e0b1dfc7-5447-410f-b708-f9603e9be79a"),
 				}
 				machineConfigs["cp"].Spec.GPUs = []anywherev1.NutanixGPUIdentifier{}
 				machineConfigs["worker"].Spec.Cluster = anywherev1.NutanixResourceIdentifier{
 					Type: anywherev1.NutanixIdentifierUUID,
-					UUID: utils.StringPtr("a15f6966-bfc7-4d1e-8575-224096fc1cdb"),
+					UUID: ptr.To[string]("a15f6966-bfc7-4d1e-8575-224096fc1cdb"),
 				}
 				machineConfigs["worker"].Spec.GPUs = []anywherev1.NutanixGPUIdentifier{
 					{
@@ -1210,25 +1217,25 @@ func TestNutanixValidatorValidateFreeGPU(t *testing.T) {
 				mockClient.EXPECT().ListAllHost(gomock.Any()).Return(fakeHostList(), nil)
 				machineConfigs["cp"].Spec.Cluster = anywherev1.NutanixResourceIdentifier{
 					Type: anywherev1.NutanixIdentifierUUID,
-					UUID: utils.StringPtr("e0b1dfc7-5447-410f-b708-f9603e9be79a"),
+					UUID: ptr.To[string]("e0b1dfc7-5447-410f-b708-f9603e9be79a"),
 				}
 				machineConfigs["cp"].Spec.GPUs = []anywherev1.NutanixGPUIdentifier{}
 				machineConfigs["worker"].Spec.Cluster = anywherev1.NutanixResourceIdentifier{
 					Type: anywherev1.NutanixIdentifierUUID,
-					UUID: utils.StringPtr("a15f6966-bfc7-4d1e-8575-224096fc1cdb"),
+					UUID: ptr.To[string]("a15f6966-bfc7-4d1e-8575-224096fc1cdb"),
 				}
 				machineConfigs["worker"].Spec.GPUs = []anywherev1.NutanixGPUIdentifier{
 					{
 						Type:     "deviceID",
-						DeviceID: utils.Int64Ptr(8757),
+						DeviceID: ptr.To[int64](8757),
 					},
 					{
 						Type:     "deviceID",
-						DeviceID: utils.Int64Ptr(8757),
+						DeviceID: ptr.To[int64](8757),
 					},
 					{
 						Type:     "deviceID",
-						DeviceID: utils.Int64Ptr(8757),
+						DeviceID: ptr.To[int64](8757),
 					},
 				}
 				clientCache := &ClientCache{clients: map[string]Client{"test": mockClient}}
@@ -1243,38 +1250,38 @@ func TestNutanixValidatorValidateFreeGPU(t *testing.T) {
 				mockClient.EXPECT().ListAllHost(gomock.Any()).Return(fakeHostList(), nil)
 				machineConfigs["cp"].Spec.Cluster = anywherev1.NutanixResourceIdentifier{
 					Type: anywherev1.NutanixIdentifierUUID,
-					UUID: utils.StringPtr("a15f6966-bfc7-4d1e-8575-224096fc1cdb"),
+					UUID: ptr.To[string]("a15f6966-bfc7-4d1e-8575-224096fc1cdb"),
 				}
 				machineConfigs["cp"].Spec.GPUs = []anywherev1.NutanixGPUIdentifier{
 					{
 						Type:     "deviceID",
-						DeviceID: utils.Int64Ptr(8757),
+						DeviceID: ptr.To[int64](8757),
 					},
 					{
 						Type:     "deviceID",
-						DeviceID: utils.Int64Ptr(8757),
+						DeviceID: ptr.To[int64](8757),
 					},
 				}
 				machineConfigs["worker"].Spec.Cluster = anywherev1.NutanixResourceIdentifier{
 					Type: anywherev1.NutanixIdentifierUUID,
-					UUID: utils.StringPtr("a15f6966-bfc7-4d1e-8575-224096fc1cdb"),
+					UUID: ptr.To[string]("a15f6966-bfc7-4d1e-8575-224096fc1cdb"),
 				}
 				machineConfigs["worker"].Spec.GPUs = []anywherev1.NutanixGPUIdentifier{
 					{
 						Type:     "deviceID",
-						DeviceID: utils.Int64Ptr(8757),
+						DeviceID: ptr.To[int64](8757),
 					},
 					{
 						Type:     "deviceID",
-						DeviceID: utils.Int64Ptr(8757),
+						DeviceID: ptr.To[int64](8757),
 					},
 					{
 						Type:     "deviceID",
-						DeviceID: utils.Int64Ptr(8757),
+						DeviceID: ptr.To[int64](8757),
 					},
 					{
 						Type:     "deviceID",
-						DeviceID: utils.Int64Ptr(8757),
+						DeviceID: ptr.To[int64](8757),
 					},
 				}
 				clientCache := &ClientCache{clients: map[string]Client{"test": mockClient}}
@@ -1298,7 +1305,7 @@ func TestNutanixValidatorValidateFreeGPU(t *testing.T) {
 					},
 					{
 						Type:     "deviceID",
-						DeviceID: utils.Int64Ptr(8757),
+						DeviceID: ptr.To[int64](8757),
 					},
 					{
 						Type: "name",
@@ -1326,7 +1333,7 @@ func TestNutanixValidatorValidateFreeGPU(t *testing.T) {
 					},
 					{
 						Type:     "deviceID",
-						DeviceID: utils.Int64Ptr(8757),
+						DeviceID: ptr.To[int64](8757),
 					},
 					{
 						Type: "name",
@@ -1365,7 +1372,7 @@ func TestNutanixValidatorValidateFreeGPU(t *testing.T) {
 				mockClient.EXPECT().ListAllHost(gomock.Any()).Return(fakeHostList(), nil)
 				machineConfigs["cp"].Spec.Cluster = anywherev1.NutanixResourceIdentifier{
 					Type: anywherev1.NutanixIdentifierUUID,
-					UUID: utils.StringPtr("4d69ca7d-022f-49d1-a454-74535993bda4"),
+					UUID: ptr.To[string]("4d69ca7d-022f-49d1-a454-74535993bda4"),
 				}
 				machineConfigs["cp"].Spec.GPUs = []anywherev1.NutanixGPUIdentifier{
 					{
@@ -1374,7 +1381,7 @@ func TestNutanixValidatorValidateFreeGPU(t *testing.T) {
 					},
 					{
 						Type:     "deviceID",
-						DeviceID: utils.Int64Ptr(8757),
+						DeviceID: ptr.To[int64](8757),
 					},
 				}
 
@@ -1418,7 +1425,7 @@ func TestNutanixValidatorValidateFreeGPU(t *testing.T) {
 							},
 							WorkerNodeGroupConfigurations: []anywherev1.WorkerNodeGroupConfiguration{
 								{
-									Count: utils.IntPtr(2),
+									Count: ptr.To[int](2),
 									MachineGroupRef: &anywherev1.Ref{
 										Name: "eksa-unit-test-worker",
 										Kind: constants.NutanixMachineConfigKind,
@@ -1728,7 +1735,7 @@ func TestValidateClusterMachineConfigsCPError(t *testing.T) {
 	ctx := context.Background()
 	clusterConfigFile := "testdata/eksa-cluster-multiple-machineconfigs.yaml"
 	clusterSpec := test.NewFullClusterSpec(t, clusterConfigFile)
-	clusterSpec.NutanixMachineConfigs["eksa-unit-test-cp"].Spec.Image.Name = utils.StringPtr("kubernetes_1_22")
+	clusterSpec.NutanixMachineConfigs["eksa-unit-test-cp"].Spec.Image.Name = ptr.To[string]("kubernetes_1_22")
 
 	ctrl := gomock.NewController(t)
 	mockClient := mocknutanix.NewMockClient(ctrl)
@@ -1756,7 +1763,7 @@ func TestValidateClusterMachineConfigsEtcdError(t *testing.T) {
 	clusterSpec := test.NewFullClusterSpec(t, clusterConfigFile)
 
 	clusterSpec.NutanixMachineConfigs["eksa-unit-test-cp"].Spec.Image = anywherev1.NutanixResourceIdentifier{
-		Name: utils.StringPtr("kubernetes_1_22"),
+		Name: ptr.To[string]("kubernetes_1_22"),
 		Type: anywherev1.NutanixIdentifierName,
 	}
 
@@ -1813,9 +1820,9 @@ func TestValidateClusterMachineConfigsSuccess(t *testing.T) {
 	clusterSpec := test.NewFullClusterSpec(t, clusterConfigFile)
 
 	clusterSpec.Cluster.Spec.KubernetesVersion = "1.22"
-	clusterSpec.NutanixMachineConfigs["eksa-unit-test-cp"].Spec.Image.Name = utils.StringPtr("kubernetes_1_22")
-	clusterSpec.NutanixMachineConfigs["eksa-unit-test-md-1"].Spec.Image.Name = utils.StringPtr("kubernetes_1_22")
-	clusterSpec.NutanixMachineConfigs["eksa-unit-test-md-2"].Spec.Image.Name = utils.StringPtr("kubernetes_1_22")
+	clusterSpec.NutanixMachineConfigs["eksa-unit-test-cp"].Spec.Image.Name = ptr.To[string]("kubernetes_1_22")
+	clusterSpec.NutanixMachineConfigs["eksa-unit-test-md-1"].Spec.Image.Name = ptr.To[string]("kubernetes_1_22")
+	clusterSpec.NutanixMachineConfigs["eksa-unit-test-md-2"].Spec.Image.Name = ptr.To[string]("kubernetes_1_22")
 
 	ctrl := gomock.NewController(t)
 	mockClient := mocknutanix.NewMockClient(ctrl)
@@ -1869,7 +1876,7 @@ func TestValidateMachineConfigFailureDomainsWrongCount(t *testing.T) {
 	validator := NewValidator(clientCache, mockTLSValidator, mockHTTPClient)
 
 	for i := 0; i < len(clusterSpec.Cluster.Spec.WorkerNodeGroupConfigurations); i++ {
-		clusterSpec.Cluster.Spec.WorkerNodeGroupConfigurations[i].Count = utils.IntPtr(20)
+		clusterSpec.Cluster.Spec.WorkerNodeGroupConfigurations[i].Count = ptr.To[int](20)
 	}
 
 	err := validator.validateFailureDomains(ctx, clientCache.clients["test"], clusterSpec)

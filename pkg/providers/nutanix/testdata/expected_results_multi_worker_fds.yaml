@@ -1,26 +1,38 @@
 apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+kind: NutanixFailureDomain
+metadata:
+  name: "eksa-unit-test-pe1"
+  namespace: "eksa-system"
+spec:
+  prismElementCluster:
+    type: "name"
+    name: "prism-cluster"
+  subnets:
+  - type: "uuid"
+    uuid: "2d166190-7759-4dc6-b835-923262d6b497"
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
+kind: NutanixFailureDomain
+metadata:
+  name: "eksa-unit-test-pe2"
+  namespace: "eksa-system"
+spec:
+  prismElementCluster:
+    type: "uuid"
+    uuid: "4d69ca7d-022f-49d1-a454-74535993bda4"
+  subnets:
+  - type: "name"
+    name: "prism-subnet"
+---
+apiVersion: infrastructure.cluster.x-k8s.io/v1beta1
 kind: NutanixCluster
 metadata:
   name: "eksa-unit-test"
   namespace: "eksa-system"
 spec:
-  failureDomains:
-  - name: "pe1"
-    cluster:
-      type: "name"
-      name: "prism-cluster"
-    subnets:
-    - type: "uuid"
-      uuid: "2d166190-7759-4dc6-b835-923262d6b497"
-    controlPlane: true
-  - name: "pe2"
-    cluster:
-      type: "uuid"
-      uuid: "4d69ca7d-022f-49d1-a454-74535993bda4"
-    subnets:
-    - type: "name"
-      name: "prism-subnet"
-    controlPlane: true
+  controlPlaneFailureDomains:
+  - name: "eksa-unit-test-pe1"
+  - name: "eksa-unit-test-pe2"
   prismCentral:
     address: "prism.nutanix.com"
     port: 9440

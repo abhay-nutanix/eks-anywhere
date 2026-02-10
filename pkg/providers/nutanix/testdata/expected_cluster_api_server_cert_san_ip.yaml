@@ -4,7 +4,6 @@ metadata:
   name: "test"
   namespace: "eksa-system"
 spec:
-  failureDomains: []
   prismCentral:
     address: "prism.nutanix.com"
     port: 9440

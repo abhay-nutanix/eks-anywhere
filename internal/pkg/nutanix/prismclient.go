@@ -87,7 +87,7 @@ func (c *client) GetClusterUUIDFromName(ctx context.Context, clusterName string)
 					isPrismCentral = true
 				}
 			}
-			if !isPrismCentral && *entity.Spec.Name == clusterName {
+			if !isPrismCentral && entity.Spec.Name == clusterName {
 				entities = append(entities, entity)
 			}
 		}

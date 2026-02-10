@@ -143,10 +143,10 @@ https://github.com/modern-go/concurrent
 ** github.com/modern-go/reflect2; version v1.0.2 --
 https://github.com/modern-go/reflect2
 
-** github.com/nutanix-cloud-native/cluster-api-provider-nutanix/api/v1beta1; version v1.3.2 --
+** github.com/nutanix-cloud-native/cluster-api-provider-nutanix/api/v1beta1; version v1.8.3 --
 https://github.com/nutanix-cloud-native/cluster-api-provider-nutanix
 
-** github.com/nutanix-cloud-native/prism-go-client; version v0.3.4 --
+** github.com/nutanix-cloud-native/prism-go-client; version v0.6.0 --
 https://github.com/nutanix-cloud-native/prism-go-client
 
 ** github.com/opencontainers/go-digest; version v1.0.0 --

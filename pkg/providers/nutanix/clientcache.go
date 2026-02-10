@@ -9,6 +9,7 @@ import (
 
 	prismgoclient "github.com/nutanix-cloud-native/prism-go-client"
 	"github.com/nutanix-cloud-native/prism-go-client/environment/credentials"
+	"github.com/nutanix-cloud-native/prism-go-client/environment/types"
 	v3 "github.com/nutanix-cloud-native/prism-go-client/v3"
 
 	anywherev1 "github.com/aws/eks-anywhere/pkg/api/v1alpha1"
@@ -32,7 +33,7 @@ func (cb *ClientCache) GetNutanixClient(datacenterConfig *anywherev1.NutanixData
 		return client, nil
 	}
 
-	clientOpts := make([]v3.ClientOption, 0)
+	clientOpts := make([]types.ClientOption[v3.Client], 0)
 	if datacenterConfig.Spec.AdditionalTrustBundle != "" {
 		block, _ := pem.Decode([]byte(datacenterConfig.Spec.AdditionalTrustBundle))
 		certs, err := x509.ParseCertificates(block.Bytes)

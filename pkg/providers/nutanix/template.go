@@ -181,24 +181,25 @@ func buildTemplateMapCP(
 		}
 	}
 
-	failureDomains := generateNutanixFailureDomains(datacenterSpec.FailureDomains)
+	nutanixFailureDomains, controlPlaneFailureDomainRefs := generateNutanixFailureDomains(clusterSpec.Cluster.Name, datacenterSpec.FailureDomains)
 
 	ccmIgnoredNodeIPs := generateCcmIgnoredNodeIPsList(clusterSpec)
 
 	values := map[string]interface{}{
-		"auditPolicy":                  auditPolicy,
-		"apiServerExtraArgs":           apiServerExtraArgs.ToPartialYaml(),
-		"ccmIgnoredNodeIPs":            ccmIgnoredNodeIPs,
-		"cloudProviderImage":           versionsBundle.Nutanix.CloudProvider.VersionedImage(),
-		"clusterName":                  clusterSpec.Cluster.Name,
-		"controlPlaneEndpointIp":       clusterSpec.Cluster.Spec.ControlPlaneConfiguration.Endpoint.Host,
-		"controlPlaneReplicas":         clusterSpec.Cluster.Spec.ControlPlaneConfiguration.Count,
-		"controlPlaneSshAuthorizedKey": controlPlaneMachineSpec.Users[0].SshAuthorizedKeys[0],
-		"controlPlaneSshUsername":      controlPlaneMachineSpec.Users[0].Name,
-		"controlPlaneTaints":           clusterSpec.Cluster.Spec.ControlPlaneConfiguration.Taints,
-		"eksaSystemNamespace":          constants.EksaSystemNamespace,
-		"format":                       format,
-		"failureDomains":               failureDomains,
+		"auditPolicy":                     auditPolicy,
+		"apiServerExtraArgs":              apiServerExtraArgs.ToPartialYaml(),
+		"ccmIgnoredNodeIPs":               ccmIgnoredNodeIPs,
+		"cloudProviderImage":              versionsBundle.Nutanix.CloudProvider.VersionedImage(),
+		"clusterName":                     clusterSpec.Cluster.Name,
+		"controlPlaneEndpointIp":          clusterSpec.Cluster.Spec.ControlPlaneConfiguration.Endpoint.Host,
+		"controlPlaneReplicas":            clusterSpec.Cluster.Spec.ControlPlaneConfiguration.Count,
+		"controlPlaneSshAuthorizedKey":    controlPlaneMachineSpec.Users[0].SshAuthorizedKeys[0],
+		"controlPlaneSshUsername":         controlPlaneMachineSpec.Users[0].Name,
+		"controlPlaneTaints":              clusterSpec.Cluster.Spec.ControlPlaneConfiguration.Taints,
+		"eksaSystemNamespace":             constants.EksaSystemNamespace,
+		"format":                          format,
+		"nutanixFailureDomains":           nutanixFailureDomains,
+		"controlPlaneFailureDomainRefs":   controlPlaneFailureDomainRefs,
 		"podCidrs":                     clusterSpec.Cluster.Spec.ClusterNetwork.Pods.CidrBlocks,
 		"serviceCidrs":                 clusterSpec.Cluster.Spec.ClusterNetwork.Services.CidrBlocks,
 		"kubernetesVersion":            versionsBundle.KubeDistro.Kubernetes.Tag,
@@ -574,10 +575,18 @@ func generateNoProxyList(clusterSpec *cluster.Spec) []string {
 	return noProxyList
 }
 
-func generateNutanixFailureDomains(eksNutanixFailureDomains []v1alpha1.NutanixDatacenterFailureDomain) []capxv1beta1.NutanixFailureDomain {
-	var failureDomains []capxv1beta1.NutanixFailureDomain
-	for _, fd := range eksNutanixFailureDomains {
+// generateNutanixFailureDomains converts EKS-A failure domain configuration to NutanixFailureDomain CRDs.
+// Returns the list of NutanixFailureDomain objects and LocalObjectReferences for the NutanixCluster.
+// Returns nil for both if there are no failure domains configured.
+func generateNutanixFailureDomains(clusterName string, eksNutanixFailureDomains []v1alpha1.NutanixDatacenterFailureDomain) ([]capxv1beta1.NutanixFailureDomain, []map[string]string) {
+	if len(eksNutanixFailureDomains) == 0 {
+		return nil, nil
+	}
 
+	var failureDomains []capxv1beta1.NutanixFailureDomain
+	var controlPlaneFailureDomainRefs []map[string]string
+
+	for _, fd := range eksNutanixFailureDomains {
 		subnets := []capxv1beta1.NutanixResourceIdentifier{}
 		for _, subnet := range fd.Subnets {
 			subnets = append(subnets, capxv1beta1.NutanixResourceIdentifier{
@@ -587,18 +596,29 @@ func generateNutanixFailureDomains(eksNutanixFailureDomains []v1alpha1.NutanixDa
 			})
 		}
 
-		failureDomains = append(failureDomains, capxv1beta1.NutanixFailureDomain{
-			Name: fd.Name,
-			Cluster: capxv1beta1.NutanixResourceIdentifier{
-				Type: capxv1beta1.NutanixIdentifierType(fd.Cluster.Type),
-				Name: fd.Cluster.Name,
-				UUID: fd.Cluster.UUID,
+		// Create NutanixFailureDomain CRD
+		nfd := capxv1beta1.NutanixFailureDomain{
+			Spec: capxv1beta1.NutanixFailureDomainSpec{
+				PrismElementCluster: capxv1beta1.NutanixResourceIdentifier{
+					Type: capxv1beta1.NutanixIdentifierType(fd.Cluster.Type),
+					Name: fd.Cluster.Name,
+					UUID: fd.Cluster.UUID,
+				},
+				Subnets: subnets,
 			},
-			Subnets:      subnets,
-			ControlPlane: true,
+		}
+		nfd.Name = fmt.Sprintf("%s-%s", clusterName, fd.Name)
+		nfd.Namespace = constants.EksaSystemNamespace
+
+		failureDomains = append(failureDomains, nfd)
+
+		// Create reference for NutanixCluster.spec.controlPlaneFailureDomains
+		controlPlaneFailureDomainRefs = append(controlPlaneFailureDomainRefs, map[string]string{
+			"name": nfd.Name,
 		})
 	}
-	return failureDomains
+
+	return failureDomains, controlPlaneFailureDomainRefs
 }
 
 func incrementIP(ip net.IP) {

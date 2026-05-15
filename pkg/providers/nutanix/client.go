@@ -5,7 +5,6 @@ import (
 
 	"github.com/nutanix-cloud-native/prism-go-client/converged"
 	v3 "github.com/nutanix-cloud-native/prism-go-client/v3"
-
 	clusterModels "github.com/nutanix/ntnx-api-golang-clients/clustermgmt-go-client/v4/models/clustermgmt/v4/config"
 	subnetModels "github.com/nutanix/ntnx-api-golang-clients/networking-go-client/v4/models/networking/v4/config"
 	prismModels "github.com/nutanix/ntnx-api-golang-clients/prism-go-client/v4/models/prism/v4/config"

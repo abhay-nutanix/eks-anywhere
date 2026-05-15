@@ -456,29 +456,33 @@ func (v *Validator) validateProjectConfig(ctx context.Context, client Client, id
 		if identifier.Name == nil || *identifier.Name == "" {
 			return fmt.Errorf("missing project name")
 		}
-		projectName := *identifier.Name
-		projects, err := client.ListAllProject(ctx, "")
-		if err != nil {
-			return fmt.Errorf("failed to list projects: %v", err)
-		}
-		found := make([]*string, 0)
-		for _, p := range projects.Entities {
-			if p.Spec != nil && p.Spec.Name == projectName {
-				found = append(found, p.Metadata.UUID)
-			}
-		}
-		if len(found) == 0 {
-			return fmt.Errorf("failed to find project by name %q: %v", projectName, err)
-		}
-		if len(found) > 1 {
-			return fmt.Errorf("found more than one (%v) project with name %q", len(found), projectName)
-		}
+		return findProjectByName(ctx, client, *identifier.Name)
 	case anywherev1.NutanixIdentifierUUID:
 		if identifier.UUID == nil || *identifier.UUID == "" {
 			return fmt.Errorf("missing project uuid")
 		}
 	default:
 		return fmt.Errorf("invalid project identifier type: %s; valid types are: %q and %q", identifier.Type, anywherev1.NutanixIdentifierName, anywherev1.NutanixIdentifierUUID)
+	}
+	return nil
+}
+
+func findProjectByName(ctx context.Context, client Client, projectName string) error {
+	projects, err := client.ListAllProject(ctx, "")
+	if err != nil {
+		return fmt.Errorf("failed to list projects: %v", err)
+	}
+	found := make([]*string, 0)
+	for _, p := range projects.Entities {
+		if p.Spec != nil && p.Spec.Name == projectName {
+			found = append(found, p.Metadata.UUID)
+		}
+	}
+	if len(found) == 0 {
+		return fmt.Errorf("failed to find project by name %q: %v", projectName, err)
+	}
+	if len(found) > 1 {
+		return fmt.Errorf("found more than one (%v) project with name %q", len(found), projectName)
 	}
 	return nil
 }
@@ -636,13 +640,26 @@ func (v *Validator) isGPURequested(configs map[string]*anywherev1.NutanixMachine
 }
 
 func (v *Validator) getAvailableGPUs(ctx context.Context, client Client, clusterUUID string) ([]availableGPU, error) {
-	var result []availableGPU
+	physicalGPUs, err := collectAvailablePhysicalGPUs(ctx, client, clusterUUID)
+	if err != nil {
+		return nil, err
+	}
 
-	physicalGPUs, err := client.ListClusterPhysicalGPUs(ctx, clusterUUID)
+	virtualGPUs, err := collectAvailableVirtualGPUs(ctx, client, clusterUUID)
+	if err != nil {
+		return nil, err
+	}
+
+	return append(physicalGPUs, virtualGPUs...), nil
+}
+
+func collectAvailablePhysicalGPUs(ctx context.Context, client Client, clusterUUID string) ([]availableGPU, error) {
+	profiles, err := client.ListClusterPhysicalGPUs(ctx, clusterUUID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list physical GPUs for cluster %s: %v", clusterUUID, err)
 	}
-	for _, pg := range physicalGPUs {
+	var result []availableGPU
+	for _, pg := range profiles {
 		if pg.PhysicalGpuConfig == nil {
 			continue
 		}
@@ -660,12 +677,16 @@ func (v *Validator) getAvailableGPUs(ctx context.Context, client Client, cluster
 			mode:       mode,
 		})
 	}
+	return result, nil
+}
 
-	virtualGPUs, err := client.ListClusterVirtualGPUs(ctx, clusterUUID)
+func collectAvailableVirtualGPUs(ctx context.Context, client Client, clusterUUID string) ([]availableGPU, error) {
+	profiles, err := client.ListClusterVirtualGPUs(ctx, clusterUUID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to list virtual GPUs for cluster %s: %v", clusterUUID, err)
 	}
-	for _, vg := range virtualGPUs {
+	var result []availableGPU
+	for _, vg := range profiles {
 		if vg.VirtualGpuConfig == nil {
 			continue
 		}
@@ -679,7 +700,6 @@ func (v *Validator) getAvailableGPUs(ctx context.Context, client Client, cluster
 			mode:       "VIRTUAL",
 		})
 	}
-
 	return result, nil
 }
 

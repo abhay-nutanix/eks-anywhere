@@ -1404,7 +1404,7 @@ func TestValidateClusterMachineConfigsError(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 	mockClient := mocknutanix.NewMockClient(ctrl)
-	
+
 	mockTLSValidator := mockCrypto.NewMockTlsValidator(ctrl)
 	mockTLSValidator.EXPECT().ValidateCert(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 
@@ -1429,7 +1429,7 @@ func TestValidateClusterMachineConfigsCPNotFoundError(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 	mockClient := mocknutanix.NewMockClient(ctrl)
-	
+
 	mockTLSValidator := mockCrypto.NewMockTlsValidator(ctrl)
 	mockTLSValidator.EXPECT().ValidateCert(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 
@@ -1458,7 +1458,7 @@ func TestValidateClusterMachineConfigsEtcdNotFoundError(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 	mockClient := mocknutanix.NewMockClient(ctrl)
-	
+
 	mockTLSValidator := mockCrypto.NewMockTlsValidator(ctrl)
 	mockTLSValidator.EXPECT().ValidateCert(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 
@@ -1483,7 +1483,7 @@ func TestValidateClusterMachineConfigsCPError(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 	mockClient := mocknutanix.NewMockClient(ctrl)
-	
+
 	mockTLSValidator := mockCrypto.NewMockTlsValidator(ctrl)
 	mockTLSValidator.EXPECT().ValidateCert(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 
@@ -1512,7 +1512,7 @@ func TestValidateClusterMachineConfigsEtcdError(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 	mockClient := mocknutanix.NewMockClient(ctrl)
-	
+
 	mockTLSValidator := mockCrypto.NewMockTlsValidator(ctrl)
 	mockTLSValidator.EXPECT().ValidateCert(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 
@@ -1538,7 +1538,7 @@ func TestValidateClusterMachineConfigsModularUpgradeError(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 	mockClient := mocknutanix.NewMockClient(ctrl)
-	
+
 	mockTLSValidator := mockCrypto.NewMockTlsValidator(ctrl)
 	mockTLSValidator.EXPECT().ValidateCert(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 
@@ -1567,7 +1567,7 @@ func TestValidateClusterMachineConfigsSuccess(t *testing.T) {
 
 	ctrl := gomock.NewController(t)
 	mockClient := mocknutanix.NewMockClient(ctrl)
-	
+
 	mockTLSValidator := mockCrypto.NewMockTlsValidator(ctrl)
 	mockTLSValidator.EXPECT().ValidateCert(gomock.Any(), gomock.Any(), gomock.Any()).Return(nil).AnyTimes()
 

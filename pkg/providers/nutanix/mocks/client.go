@@ -11,11 +11,10 @@ import (
 	gomock "github.com/golang/mock/gomock"
 	converged "github.com/nutanix-cloud-native/prism-go-client/converged"
 	v3 "github.com/nutanix-cloud-native/prism-go-client/v3"
-
-	clusterModels "github.com/nutanix/ntnx-api-golang-clients/clustermgmt-go-client/v4/models/clustermgmt/v4/config"
-	subnetModels "github.com/nutanix/ntnx-api-golang-clients/networking-go-client/v4/models/networking/v4/config"
-	prismModels "github.com/nutanix/ntnx-api-golang-clients/prism-go-client/v4/models/prism/v4/config"
-	imageModels "github.com/nutanix/ntnx-api-golang-clients/vmm-go-client/v4/models/vmm/v4/content"
+	config "github.com/nutanix/ntnx-api-golang-clients/clustermgmt-go-client/v4/models/clustermgmt/v4/config"
+	config0 "github.com/nutanix/ntnx-api-golang-clients/networking-go-client/v4/models/networking/v4/config"
+	config1 "github.com/nutanix/ntnx-api-golang-clients/prism-go-client/v4/models/prism/v4/config"
+	content "github.com/nutanix/ntnx-api-golang-clients/vmm-go-client/v4/models/vmm/v4/content"
 )
 
 // MockClient is a mock of Client interface.
@@ -41,176 +40,11 @@ func (m *MockClient) EXPECT() *MockClientMockRecorder {
 	return m.recorder
 }
 
-// GetSubnet mocks base method.
-func (m *MockClient) GetSubnet(ctx context.Context, uuid string) (*subnetModels.Subnet, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetSubnet", ctx, uuid)
-	ret0, _ := ret[0].(*subnetModels.Subnet)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetSubnet indicates an expected call of GetSubnet.
-func (mr *MockClientMockRecorder) GetSubnet(ctx, uuid interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSubnet", reflect.TypeOf((*MockClient)(nil).GetSubnet), ctx, uuid)
-}
-
-// ListSubnets mocks base method.
-func (m *MockClient) ListSubnets(ctx context.Context, opts ...converged.ODataOption) ([]subnetModels.Subnet, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "ListSubnets", varargs...)
-	ret0, _ := ret[0].([]subnetModels.Subnet)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ListSubnets indicates an expected call of ListSubnets.
-func (mr *MockClientMockRecorder) ListSubnets(ctx interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListSubnets", reflect.TypeOf((*MockClient)(nil).ListSubnets), varargs...)
-}
-
-// GetImage mocks base method.
-func (m *MockClient) GetImage(ctx context.Context, uuid string) (*imageModels.Image, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetImage", ctx, uuid)
-	ret0, _ := ret[0].(*imageModels.Image)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetImage indicates an expected call of GetImage.
-func (mr *MockClientMockRecorder) GetImage(ctx, uuid interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetImage", reflect.TypeOf((*MockClient)(nil).GetImage), ctx, uuid)
-}
-
-// ListImages mocks base method.
-func (m *MockClient) ListImages(ctx context.Context, opts ...converged.ODataOption) ([]imageModels.Image, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "ListImages", varargs...)
-	ret0, _ := ret[0].([]imageModels.Image)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ListImages indicates an expected call of ListImages.
-func (mr *MockClientMockRecorder) ListImages(ctx interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListImages", reflect.TypeOf((*MockClient)(nil).ListImages), varargs...)
-}
-
-// GetCluster mocks base method.
-func (m *MockClient) GetCluster(ctx context.Context, uuid string) (*clusterModels.Cluster, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetCluster", ctx, uuid)
-	ret0, _ := ret[0].(*clusterModels.Cluster)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetCluster indicates an expected call of GetCluster.
-func (mr *MockClientMockRecorder) GetCluster(ctx, uuid interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCluster", reflect.TypeOf((*MockClient)(nil).GetCluster), ctx, uuid)
-}
-
-// ListClusters mocks base method.
-func (m *MockClient) ListClusters(ctx context.Context, opts ...converged.ODataOption) ([]clusterModels.Cluster, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "ListClusters", varargs...)
-	ret0, _ := ret[0].([]clusterModels.Cluster)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ListClusters indicates an expected call of ListClusters.
-func (mr *MockClientMockRecorder) ListClusters(ctx interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListClusters", reflect.TypeOf((*MockClient)(nil).ListClusters), varargs...)
-}
-
-// ListAllHosts mocks base method.
-func (m *MockClient) ListAllHosts(ctx context.Context, opts ...converged.ODataOption) ([]clusterModels.Host, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "ListAllHosts", varargs...)
-	ret0, _ := ret[0].([]clusterModels.Host)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ListAllHosts indicates an expected call of ListAllHosts.
-func (mr *MockClientMockRecorder) ListAllHosts(ctx interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAllHosts", reflect.TypeOf((*MockClient)(nil).ListAllHosts), varargs...)
-}
-
-// ListClusterPhysicalGPUs mocks base method.
-func (m *MockClient) ListClusterPhysicalGPUs(ctx context.Context, clusterUUID string, opts ...converged.ODataOption) ([]clusterModels.PhysicalGpuProfile, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, clusterUUID}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "ListClusterPhysicalGPUs", varargs...)
-	ret0, _ := ret[0].([]clusterModels.PhysicalGpuProfile)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ListClusterPhysicalGPUs indicates an expected call of ListClusterPhysicalGPUs.
-func (mr *MockClientMockRecorder) ListClusterPhysicalGPUs(ctx, clusterUUID interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, clusterUUID}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListClusterPhysicalGPUs", reflect.TypeOf((*MockClient)(nil).ListClusterPhysicalGPUs), varargs...)
-}
-
-// ListClusterVirtualGPUs mocks base method.
-func (m *MockClient) ListClusterVirtualGPUs(ctx context.Context, clusterUUID string, opts ...converged.ODataOption) ([]clusterModels.VirtualGpuProfile, error) {
-	m.ctrl.T.Helper()
-	varargs := []interface{}{ctx, clusterUUID}
-	for _, a := range opts {
-		varargs = append(varargs, a)
-	}
-	ret := m.ctrl.Call(m, "ListClusterVirtualGPUs", varargs...)
-	ret0, _ := ret[0].([]clusterModels.VirtualGpuProfile)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ListClusterVirtualGPUs indicates an expected call of ListClusterVirtualGPUs.
-func (mr *MockClientMockRecorder) ListClusterVirtualGPUs(ctx, clusterUUID interface{}, opts ...interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	varargs := append([]interface{}{ctx, clusterUUID}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListClusterVirtualGPUs", reflect.TypeOf((*MockClient)(nil).ListClusterVirtualGPUs), varargs...)
-}
-
 // GetCategory mocks base method.
-func (m *MockClient) GetCategory(ctx context.Context, uuid string) (*prismModels.Category, error) {
+func (m *MockClient) GetCategory(ctx context.Context, uuid string) (*config1.Category, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetCategory", ctx, uuid)
-	ret0, _ := ret[0].(*prismModels.Category)
+	ret0, _ := ret[0].(*config1.Category)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -221,24 +55,69 @@ func (mr *MockClientMockRecorder) GetCategory(ctx, uuid interface{}) *gomock.Cal
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCategory", reflect.TypeOf((*MockClient)(nil).GetCategory), ctx, uuid)
 }
 
-// ListCategories mocks base method.
-func (m *MockClient) ListCategories(ctx context.Context, opts ...converged.ODataOption) ([]prismModels.Category, error) {
+// GetCluster mocks base method.
+func (m *MockClient) GetCluster(ctx context.Context, uuid string) (*config.Cluster, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetCluster", ctx, uuid)
+	ret0, _ := ret[0].(*config.Cluster)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetCluster indicates an expected call of GetCluster.
+func (mr *MockClientMockRecorder) GetCluster(ctx, uuid interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCluster", reflect.TypeOf((*MockClient)(nil).GetCluster), ctx, uuid)
+}
+
+// GetImage mocks base method.
+func (m *MockClient) GetImage(ctx context.Context, uuid string) (*content.Image, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetImage", ctx, uuid)
+	ret0, _ := ret[0].(*content.Image)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetImage indicates an expected call of GetImage.
+func (mr *MockClientMockRecorder) GetImage(ctx, uuid interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetImage", reflect.TypeOf((*MockClient)(nil).GetImage), ctx, uuid)
+}
+
+// GetSubnet mocks base method.
+func (m *MockClient) GetSubnet(ctx context.Context, uuid string) (*config0.Subnet, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSubnet", ctx, uuid)
+	ret0, _ := ret[0].(*config0.Subnet)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetSubnet indicates an expected call of GetSubnet.
+func (mr *MockClientMockRecorder) GetSubnet(ctx, uuid interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSubnet", reflect.TypeOf((*MockClient)(nil).GetSubnet), ctx, uuid)
+}
+
+// ListAllHosts mocks base method.
+func (m *MockClient) ListAllHosts(ctx context.Context, opts ...converged.ODataOption) ([]config.Host, error) {
 	m.ctrl.T.Helper()
 	varargs := []interface{}{ctx}
 	for _, a := range opts {
 		varargs = append(varargs, a)
 	}
-	ret := m.ctrl.Call(m, "ListCategories", varargs...)
-	ret0, _ := ret[0].([]prismModels.Category)
+	ret := m.ctrl.Call(m, "ListAllHosts", varargs...)
+	ret0, _ := ret[0].([]config.Host)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// ListCategories indicates an expected call of ListCategories.
-func (mr *MockClientMockRecorder) ListCategories(ctx interface{}, opts ...interface{}) *gomock.Call {
+// ListAllHosts indicates an expected call of ListAllHosts.
+func (mr *MockClientMockRecorder) ListAllHosts(ctx interface{}, opts ...interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	varargs := append([]interface{}{ctx}, opts...)
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCategories", reflect.TypeOf((*MockClient)(nil).ListCategories), varargs...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAllHosts", reflect.TypeOf((*MockClient)(nil).ListAllHosts), varargs...)
 }
 
 // ListAllProject mocks base method.
@@ -254,4 +133,124 @@ func (m *MockClient) ListAllProject(ctx context.Context, filter string) (*v3.Pro
 func (mr *MockClientMockRecorder) ListAllProject(ctx, filter interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListAllProject", reflect.TypeOf((*MockClient)(nil).ListAllProject), ctx, filter)
+}
+
+// ListCategories mocks base method.
+func (m *MockClient) ListCategories(ctx context.Context, opts ...converged.ODataOption) ([]config1.Category, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "ListCategories", varargs...)
+	ret0, _ := ret[0].([]config1.Category)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListCategories indicates an expected call of ListCategories.
+func (mr *MockClientMockRecorder) ListCategories(ctx interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListCategories", reflect.TypeOf((*MockClient)(nil).ListCategories), varargs...)
+}
+
+// ListClusterPhysicalGPUs mocks base method.
+func (m *MockClient) ListClusterPhysicalGPUs(ctx context.Context, clusterUUID string, opts ...converged.ODataOption) ([]config.PhysicalGpuProfile, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, clusterUUID}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "ListClusterPhysicalGPUs", varargs...)
+	ret0, _ := ret[0].([]config.PhysicalGpuProfile)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListClusterPhysicalGPUs indicates an expected call of ListClusterPhysicalGPUs.
+func (mr *MockClientMockRecorder) ListClusterPhysicalGPUs(ctx, clusterUUID interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, clusterUUID}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListClusterPhysicalGPUs", reflect.TypeOf((*MockClient)(nil).ListClusterPhysicalGPUs), varargs...)
+}
+
+// ListClusterVirtualGPUs mocks base method.
+func (m *MockClient) ListClusterVirtualGPUs(ctx context.Context, clusterUUID string, opts ...converged.ODataOption) ([]config.VirtualGpuProfile, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx, clusterUUID}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "ListClusterVirtualGPUs", varargs...)
+	ret0, _ := ret[0].([]config.VirtualGpuProfile)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListClusterVirtualGPUs indicates an expected call of ListClusterVirtualGPUs.
+func (mr *MockClientMockRecorder) ListClusterVirtualGPUs(ctx, clusterUUID interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx, clusterUUID}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListClusterVirtualGPUs", reflect.TypeOf((*MockClient)(nil).ListClusterVirtualGPUs), varargs...)
+}
+
+// ListClusters mocks base method.
+func (m *MockClient) ListClusters(ctx context.Context, opts ...converged.ODataOption) ([]config.Cluster, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "ListClusters", varargs...)
+	ret0, _ := ret[0].([]config.Cluster)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListClusters indicates an expected call of ListClusters.
+func (mr *MockClientMockRecorder) ListClusters(ctx interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListClusters", reflect.TypeOf((*MockClient)(nil).ListClusters), varargs...)
+}
+
+// ListImages mocks base method.
+func (m *MockClient) ListImages(ctx context.Context, opts ...converged.ODataOption) ([]content.Image, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "ListImages", varargs...)
+	ret0, _ := ret[0].([]content.Image)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListImages indicates an expected call of ListImages.
+func (mr *MockClientMockRecorder) ListImages(ctx interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListImages", reflect.TypeOf((*MockClient)(nil).ListImages), varargs...)
+}
+
+// ListSubnets mocks base method.
+func (m *MockClient) ListSubnets(ctx context.Context, opts ...converged.ODataOption) ([]config0.Subnet, error) {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{ctx}
+	for _, a := range opts {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "ListSubnets", varargs...)
+	ret0, _ := ret[0].([]config0.Subnet)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// ListSubnets indicates an expected call of ListSubnets.
+func (mr *MockClientMockRecorder) ListSubnets(ctx interface{}, opts ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{ctx}, opts...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListSubnets", reflect.TypeOf((*MockClient)(nil).ListSubnets), varargs...)
 }
